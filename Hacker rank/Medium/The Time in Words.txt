@@ -1,0 +1,71 @@
+'use strict';
+
+const fs = require('fs');
+
+process.stdin.resume();
+process.stdin.setEncoding('utf-8');
+
+let inputString = '';
+let currentLine = 0;
+
+process.stdin.on('data', function(inputStdin) {
+    inputString += inputStdin;
+});
+
+process.stdin.on('end', function() {
+    inputString = inputString.split('\n');
+
+    main();
+});
+
+function readLine() {
+    return inputString[currentLine++];
+}
+
+/*
+ * Complete the 'timeInWords' function below.
+ *
+ * The function is expected to return a STRING.
+ * The function accepts following parameters:
+ *  1. INTEGER h
+ *  2. INTEGER m
+ */
+
+function timeInWords(h, m) {
+     const words = [
+        'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+        'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 
+        'nineteen'
+    ];
+
+    const getMinuteWord = (min) => {
+        if (min === 0) return 'o\' clock';
+        else if (min === 1) return 'one minute';
+        else if (min === 15 || min === 45) return 'quarter';
+        else if (min === 30) return 'half';
+        else if (min === 59) return 'one minute to';
+        else if (min <= 19) return words[min] + ' minutes';
+        else return 'twenty ' + (min % 10 === 0 ? '' : words[min % 10]) + ' minutes';
+    };
+
+    const getTimePhrase = (hour, minute, relation) => {
+        const minuteWord = getMinuteWord(minute);
+        return minute === 0 ? `${words[hour]} ${minuteWord}` : `${minuteWord} ${relation} ${words[hour]}`;
+    };
+
+    return m <= 30 ? getTimePhrase(h, m, 'past') : getTimePhrase(h + 1, 60 - m, 'to');
+}
+
+function main() {
+    const ws = fs.createWriteStream(process.env.OUTPUT_PATH);
+
+    const h = parseInt(readLine().trim(), 10);
+
+    const m = parseInt(readLine().trim(), 10);
+
+    const result = timeInWords(h, m);
+
+    ws.write(result + '\n');
+
+    ws.end();
+}

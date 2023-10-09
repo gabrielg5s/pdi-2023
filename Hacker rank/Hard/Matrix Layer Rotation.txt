@@ -1,0 +1,75 @@
+'use strict';
+
+process.stdin.resume();
+process.stdin.setEncoding('utf-8');
+
+let inputString = '';
+let currentLine = 0;
+
+process.stdin.on('data', function(inputStdin) {
+    inputString += inputStdin;
+});
+
+process.stdin.on('end', function() {
+    inputString = inputString.split('\n');
+
+    main();
+});
+
+function readLine() {
+    return inputString[currentLine++];
+}
+
+/*
+ * Complete the 'matrixRotation' function below.
+ *
+ * The function accepts following parameters:
+ *  1. 2D_INTEGER_ARRAY matrix
+ *  2. INTEGER r
+ */
+
+function matrixRotation(matrix, r) {
+    const m = matrix.length;
+    const n = matrix[0].length;
+    const numLayers = Math.min(m, n) / 2;
+
+    for (let layer = 0; layer < numLayers; layer++) {
+        const layerElements = [];
+
+        for (let i = layer; i < n - layer; i++) layerElements.push(matrix[layer][i]);
+        for (let i = layer + 1; i < m - layer; i++) layerElements.push(matrix[i][n - 1 - layer]);
+        for (let i = n - 2 - layer; i >= layer; i--) layerElements.push(matrix[m - 1 - layer][i]);
+        for (let i = m - 2 - layer; i > layer; i--) layerElements.push(matrix[i][layer]);
+
+        const rotations = r % layerElements.length;
+
+        const rotatedLayer = [...layerElements.slice(rotations), ...layerElements.slice(0, rotations)];
+
+        let index = 0;
+        for (let i = layer; i < n - layer; i++) matrix[layer][i] = rotatedLayer[index++];
+        for (let i = layer + 1; i < m - layer; i++) matrix[i][n - 1 - layer] = rotatedLayer[index++];
+        for (let i = n - 2 - layer; i >= layer; i--) matrix[m - 1 - layer][i] = rotatedLayer[index++];
+        for (let i = m - 2 - layer; i > layer; i--) matrix[i][layer] = rotatedLayer[index++];
+    }
+
+    matrix.forEach(row => console.log(row.join(' ')));
+
+}
+
+function main() {
+    const firstMultipleInput = readLine().replace(/\s+$/g, '').split(' ');
+
+    const m = parseInt(firstMultipleInput[0], 10);
+
+    const n = parseInt(firstMultipleInput[1], 10);
+
+    const r = parseInt(firstMultipleInput[2], 10);
+
+    let matrix = Array(m);
+
+    for (let i = 0; i < m; i++) {
+        matrix[i] = readLine().replace(/\s+$/g, '').split(' ').map(matrixTemp => parseInt(matrixTemp, 10));
+    }
+
+    matrixRotation(matrix, r);
+}
